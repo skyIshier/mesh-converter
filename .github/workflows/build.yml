@@ -26,18 +26,17 @@ jobs:
           pip install --prefer-binary --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
 
       - name: Manually download Android NDK 25.2.9519653
-        run: |
-          mkdir -p /home/runner/.buildozer/android/platform
-          cd /home/runner/.buildozer/android/platform
-          NDK_FILE="android-ndk-r25.2.9519653-linux.zip"
-          if [ ! -f "$NDK_FILE" ]; then
-            echo "Downloading NDK 25.2.9519653..."
-            wget -c "https://dl.google.com/android/repository/$NDK_FILE"
-          else
-            echo "NDK already downloaded."
-          fi
-          # 验证文件存在且大小合理（可选）
-          ls -lh "$NDK_FILE"
+  run: |
+    mkdir -p /home/runner/.buildozer/android/platform
+    cd /home/runner/.buildozer/android/platform
+    NDK_FILE="android-ndk-r25c-linux.zip"
+    if [ ! -f "$NDK_FILE" ]; then
+      echo "Downloading NDK 25.2.9519653 (r25c)..."
+      wget -c "https://dl.google.com/android/repository/$NDK_FILE"
+    else
+      echo "NDK already downloaded."
+    fi
+    ls -lh "$NDK_FILE"
 
       - name: Build with buildozer
         env:

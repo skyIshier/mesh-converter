@@ -38,7 +38,7 @@ android.api = 30
 android.minapi = 21
 
 # NDK 版本（buildozer 会自动下载）
-android.ndk = 25.2.9519653
+android.ndk = 25c
 
 # SDK 版本（通常与 api 一致）
 android.sdk = 30
