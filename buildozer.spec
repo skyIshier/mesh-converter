@@ -27,6 +27,8 @@ source.main = main.py
 
 # Android 权限（读写存储权限必须）
 android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
+android.accept_sdk_license = True
+android.build_tools_version = 34.0.0
 
 # 是否显示控制台（调试用建议设为 True，正式版可改为 False）
 android.console = False
