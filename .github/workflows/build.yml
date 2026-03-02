@@ -25,6 +25,8 @@ jobs:
           pip install buildozer cython
 
       - name: Build with buildozer
+        env:
+           PIP_VERBOSE: 1
         run: |
           buildozer android debug
 
