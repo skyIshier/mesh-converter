@@ -59,8 +59,12 @@ jobs:
         run: |
           set -x
           rm -rf /home/runner/.buildozer
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          export ANDROID_NDK_HOME=/home/runner/android-ndk-r26c
+          export ANDROID_NDK_ROOT=/home/runner/android-ndk-r26c
+          export ANDROIDNDK=/home/runner/android-ndk-r26c
           export ACLOCAL_PATH="/usr/share/aclocal:$ACLOCAL_PATH"
-          sudo libtoolize --force
           buildozer android debug
 
       - name: Upload APK

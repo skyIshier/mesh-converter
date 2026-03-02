@@ -3,6 +3,9 @@
 android.sdk_path = /usr/local/lib/android/sdk
 android.ndk_path = /home/runner/android-ndk-r25c
 
+android.ndk_path = /home/runner/android-ndk-r26c
+p4a.branch = develop
+
 # 应用名称（显示在手机上的名字）
 title = 光遇Mesh转换器
 
