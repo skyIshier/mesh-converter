@@ -51,6 +51,9 @@ jobs:
           echo "ANDROID_NDK_ROOT=$NDK_DIR" >> $GITHUB_ENV
           echo "NDK installed at: $NDK_DIR"
           ls -la $NDK_DIR
+          # 创建符号链接以满足 buildozer 的期望路径
+          mkdir -p /usr/local/lib/android/sdk/tools/bin
+          ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager /usr/local/lib/android/sdk/tools/bin/sdkmanager
           # 验证 sdkmanager 是否可用
           which sdkmanager || echo "Warning: sdkmanager not found, but PATH should include it."
 
