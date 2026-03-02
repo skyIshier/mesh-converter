@@ -28,13 +28,13 @@ jobs:
           pip install --prefer-binary --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
 
       - name: Build with buildozer
-  env:
-    PYTHONUNBUFFERED: 1
-  run: |
-    set -x
-    # 可选：清除缓存，确保从头构建（会重新下载 SDK/NDK，耗时较长）
-    # rm -rf .buildozer
-    buildozer android debug
+        env:
+          PYTHONUNBUFFERED: 1
+        run: |
+          set -x
+          # 可选：清除缓存，确保从头构建（会重新下载 SDK/NDK，耗时较长）
+          # rm -rf .buildozer
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
