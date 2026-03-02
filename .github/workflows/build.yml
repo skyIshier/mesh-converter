@@ -22,13 +22,13 @@ jobs:
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install buildozer cython
-          # 提前安装 buildozer 内部需要安装的包
-          pip install appdirs colorama jinja2 sh build toml packaging setuptools
+          pip install -v buildozer cython
+          pip install -v --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
 
       - name: Build with buildozer
         env:
            PIP_VERBOSE: 1
+           PYTHONUNBUFFERED: 1
         run: |
           buildozer android debug
 
