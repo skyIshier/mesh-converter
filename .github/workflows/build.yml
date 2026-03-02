@@ -20,20 +20,21 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev wget
+          sudo apt install -y \
+            git zip unzip openjdk-17-jdk python3-pip \
+            autoconf automake libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev wget \
+            autoconf-archive libtool-bin gettext
           pip install --upgrade pip
           pip install buildozer cython
           pip install --prefer-binary --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
 
       - name: Set up Android SDK and NDK
         run: |
-          # 添加 sdkmanager 到 PATH（GitHub 运行器的命令行工具位置）
           echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          # 设置 SDK 环境变量
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          # 手动下载 NDK r25c
-          NDK_VERSION="r25c"
+          # 下载 NDK r26c
+          NDK_VERSION="r26c"
           NDK_ZIP="android-ndk-${NDK_VERSION}-linux.zip"
           NDK_URL="https://dl.google.com/android/repository/$NDK_ZIP"
           NDK_DIR="/home/runner/android-ndk-${NDK_VERSION}"
@@ -42,20 +43,15 @@ jobs:
             wget -q --show-progress "$NDK_URL" -O "$NDK_ZIP"
             echo "Extracting NDK..."
             unzip -q "$NDK_ZIP" -d /home/runner/
-            # 确保目录名称正确
             if [ ! -d "$NDK_DIR" ] && [ -d "/home/runner/android-ndk-${NDK_VERSION}" ]; then
               mv "/home/runner/android-ndk-${NDK_VERSION}" "$NDK_DIR"
             fi
           fi
           echo "ANDROID_NDK_HOME=$NDK_DIR" >> $GITHUB_ENV
           echo "ANDROID_NDK_ROOT=$NDK_DIR" >> $GITHUB_ENV
-          echo "NDK installed at: $NDK_DIR"
           ls -la $NDK_DIR
-          # 创建符号链接以满足 buildozer 的期望路径
           mkdir -p /usr/local/lib/android/sdk/tools/bin
           ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager /usr/local/lib/android/sdk/tools/bin/sdkmanager
-          # 验证 sdkmanager 是否可用
-          which sdkmanager || echo "Warning: sdkmanager not found, but PATH should include it."
 
       - name: Build with buildozer
         env:
@@ -63,7 +59,9 @@ jobs:
         run: |
           set -x
           rm -rf /home/runner/.buildozer
-          buildozer android debug --verbose
+          export ACLOCAL_PATH="/usr/share/aclocal:$ACLOCAL_PATH"
+          sudo libtoolize --force
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
