@@ -1,5 +1,8 @@
 [app]
 
+android.sdk_path = /usr/local/lib/android/sdk
+android.ndk_path = /usr/local/lib/android/sdk/ndk/25.2.9519653
+
 # 应用名称（显示在手机上的名字）
 title = 光遇Mesh转换器
 
