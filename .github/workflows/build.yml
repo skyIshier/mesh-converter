@@ -20,16 +20,18 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev wget
+          sudo apt install -y \
+            git zip unzip openjdk-17-jdk python3-pip \
+            autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev wget \
+            autoconf-archive libtool-bin
           pip install --upgrade pip
           pip install buildozer cython
           pip install --prefer-binary --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
 
       - name: Set up Android SDK and NDK
         run: |
-          # 添加 sdkmanager 到 PATH（GitHub 运行器的命令行工具位置）
+          # 添加 sdkmanager 到 PATH
           echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          # 设置 SDK 环境变量
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
           # 手动下载 NDK r25c
@@ -42,7 +44,6 @@ jobs:
             wget -q --show-progress "$NDK_URL" -O "$NDK_ZIP"
             echo "Extracting NDK..."
             unzip -q "$NDK_ZIP" -d /home/runner/
-            # 确保目录名称正确
             if [ ! -d "$NDK_DIR" ] && [ -d "/home/runner/android-ndk-${NDK_VERSION}" ]; then
               mv "/home/runner/android-ndk-${NDK_VERSION}" "$NDK_DIR"
             fi
@@ -55,15 +56,19 @@ jobs:
           mkdir -p /usr/local/lib/android/sdk/tools/bin
           ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager /usr/local/lib/android/sdk/tools/bin/sdkmanager
           # 验证 sdkmanager 是否可用
-          which sdkmanager || echo "Warning: sdkmanager not found, but PATH should include it."
+          which sdkmanager && sdkmanager --version || echo "Warning: sdkmanager not found"
 
       - name: Build with buildozer
         env:
           PYTHONUNBUFFERED: 1
         run: |
           set -x
+          # 清理 buildozer 缓存，避免干扰
           rm -rf /home/runner/.buildozer
-          buildozer android debug --verbose
+          # 设置 ACLOCAL_PATH 以便找到 autoconf-archive 宏
+          export ACLOCAL_PATH="/usr/share/aclocal:$ACLOCAL_PATH"
+          # 运行 buildozer
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
