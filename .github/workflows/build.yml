@@ -20,31 +20,30 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev wget
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev
           pip install --upgrade pip
           pip install buildozer cython
+          # 提前安装所有 buildozer 需要的 Python 包
           pip install --prefer-binary --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
 
-      - name: Manually download Android NDK 25.2.9519653
+      - name: Set up Android SDK environment (use pre-installed)
         run: |
-          mkdir -p /home/runner/.buildozer/android/platform
-          cd /home/runner/.buildozer/android/platform
-          NDK_FILE="android-ndk-r25c-linux.zip"
-          if [ ! -f "$NDK_FILE" ]; then
-            echo "Downloading NDK 25.2.9519653 (r25c)..."
-            wget -c "https://dl.google.com/android/repository/$NDK_FILE"
-          else
-            echo "NDK already downloaded."
-          fi
-          ls -lh "$NDK_FILE"
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          # 查找已安装的 NDK 25 版本
+          NDK_PATH=$(ls -d /usr/local/lib/android/sdk/ndk/25* | head -1)
+          echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "Using NDK at: $NDK_PATH"
+          # 检查 SDK 和 NDK 是否存在
+          ls -la $ANDROID_HOME
+          ls -la $NDK_PATH
 
       - name: Build with buildozer
         env:
           PYTHONUNBUFFERED: 1
         run: |
           set -x
-          # 可选：清除缓存，确保从头构建（会重新下载 SDK/NDK，耗时较长）
-          # rm -rf .buildozer
+          # 确保 buildozer 不使用自动下载的 SDK/NDK
           buildozer android debug
 
       - name: Upload APK

@@ -38,10 +38,10 @@ android.api = 30
 android.minapi = 21
 
 # NDK 版本（buildozer 会自动下载）
-android.ndk = 25c
+#android.ndk = 25c
 
 # SDK 版本（通常与 api 一致）
-android.sdk = 30
+#android.sdk = 30
 
 # 是否启用 AndroidX（推荐启用）
 android.use_sdl2 = True
