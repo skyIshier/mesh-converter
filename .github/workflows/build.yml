@@ -20,12 +20,24 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev libffi-dev libssl-dev wget
           pip install --upgrade pip
-          # 安装 buildozer 和 cython
           pip install buildozer cython
-          # 提前安装所有 buildozer 需要的 Python 包，使用 --prefer-binary 避免编译
           pip install --prefer-binary --no-cache-dir appdirs colorama jinja2 sh build toml packaging setuptools
+
+      - name: Manually download Android NDK 25.2.9519653
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform
+          cd /home/runner/.buildozer/android/platform
+          NDK_FILE="android-ndk-r25.2.9519653-linux.zip"
+          if [ ! -f "$NDK_FILE" ]; then
+            echo "Downloading NDK 25.2.9519653..."
+            wget -c "https://dl.google.com/android/repository/$NDK_FILE"
+          else
+            echo "NDK already downloaded."
+          fi
+          # 验证文件存在且大小合理（可选）
+          ls -lh "$NDK_FILE"
 
       - name: Build with buildozer
         env:
