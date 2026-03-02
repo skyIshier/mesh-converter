@@ -27,10 +27,12 @@ jobs:
 
       - name: Set up Android SDK and NDK
         run: |
-          # 设置系统预装的 Android SDK 路径
+          # 添加 sdkmanager 到 PATH（GitHub 运行器的命令行工具位置）
+          echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          # 设置 SDK 环境变量
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          # 手动下载 NDK r25c (对应版本 25.2.9519653)
+          # 手动下载 NDK r25c
           NDK_VERSION="r25c"
           NDK_ZIP="android-ndk-${NDK_VERSION}-linux.zip"
           NDK_URL="https://dl.google.com/android/repository/$NDK_ZIP"
@@ -40,7 +42,7 @@ jobs:
             wget -q --show-progress "$NDK_URL" -O "$NDK_ZIP"
             echo "Extracting NDK..."
             unzip -q "$NDK_ZIP" -d /home/runner/
-            # 确保目录名称正确（解压后目录名可能是 android-ndk-r25c）
+            # 确保目录名称正确
             if [ ! -d "$NDK_DIR" ] && [ -d "/home/runner/android-ndk-${NDK_VERSION}" ]; then
               mv "/home/runner/android-ndk-${NDK_VERSION}" "$NDK_DIR"
             fi
@@ -49,6 +51,8 @@ jobs:
           echo "ANDROID_NDK_ROOT=$NDK_DIR" >> $GITHUB_ENV
           echo "NDK installed at: $NDK_DIR"
           ls -la $NDK_DIR
+          # 验证 sdkmanager 是否可用
+          which sdkmanager || echo "Warning: sdkmanager not found, but PATH should include it."
 
       - name: Build with buildozer
         env:
@@ -57,7 +61,6 @@ jobs:
           set -x
           # 清理 buildozer 缓存，避免干扰
           rm -rf /home/runner/.buildozer
-          # 环境变量已通过 $GITHUB_ENV 设置，直接运行
           buildozer android debug
 
       - name: Upload APK
